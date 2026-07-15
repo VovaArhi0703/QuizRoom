@@ -7,6 +7,7 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env"), quiet: true });
 const env = {
   port: Number(process.env.PORT || 5000),
   databaseUrl: process.env.DATABASE_URL,
+  databaseSsl: process.env.DATABASE_SSL || "auto",
   jwtSecret: process.env.JWT_SECRET || "dev-secret-change-me",
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
   googleClientId: process.env.GOOGLE_CLIENT_ID || "",

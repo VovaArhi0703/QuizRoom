@@ -4,13 +4,15 @@ const { Pool } = require("pg");
 const { env } = require("./env");
 
 const databaseUrl = new URL(env.databaseUrl);
+const isLocalDatabase = ["localhost", "127.0.0.1", "::1"].includes(databaseUrl.hostname);
+const useSsl = env.databaseSsl === "true" || (env.databaseSsl === "auto" && !isLocalDatabase);
 
 databaseUrl.searchParams.set("application_name", "quizroom-api");
 databaseUrl.searchParams.set("connect_timeout", "10");
 
 const pool = new Pool({
   connectionString: databaseUrl.toString(),
-  ssl: false,
+  ssl: useSsl ? { rejectUnauthorized: false } : false,
   // Supabase's shared pool is the scarce resource. A single API process does not
   // need multiple permanent database sessions for this MVP; requests wait in
   // this local pool instead of opening more remote connections.
