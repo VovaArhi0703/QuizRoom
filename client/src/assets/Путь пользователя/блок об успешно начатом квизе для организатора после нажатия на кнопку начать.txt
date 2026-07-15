@@ -1,0 +1,212 @@
+Квиз начинается и мы предлагаем ползователю вернуться на экран "созданные квизы". блок разместит по центру экрана по высоте и ширине
+все иконки для него храняся в том же папке Gathering_participants
+/* Frame 2131330250 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 20px;
+gap: 36px;
+
+position: relative;
+width: 716px;
+height: 408px;
+left: 9086px;
+top: 2273px;
+
+background: #FFFFFF;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 36px;
+
+
+/* Frame 2131330113 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 16px;
+
+width: 456px;
+height: 271px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* galka_image */
+
+box-sizing: border-box;
+
+width: 160px;
+height: 160px;
+
+border-radius: 24px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector 5 */
+
+position: absolute;
+width: 187.5px;
+height: 133.5px;
+left: 40.5px;
+top: 36px;
+
+background: #F3F7D9;
+filter: blur(21.75px);
+
+
+/* Vector 6 */
+
+position: absolute;
+width: 187.5px;
+height: 133.5px;
+left: -88.5px;
+top: -27px;
+
+background: #F3F7D9;
+filter: blur(21.75px);
+transform: rotate(180deg);
+
+
+/* galka_create_quiz */
+
+position: absolute;
+width: 114px;
+height: 114px;
+left: 23px;
+top: 23px;
+
+
+
+/* Vector */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 13.16%;
+right: 13.16%;
+top: 23.68%;
+bottom: 23.68%;
+
+background: #DAF276;
+border: 3px solid #000000;
+
+
+/* Frame 2131330112 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 4px;
+
+width: 456px;
+height: 95px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Квиз успешно начат! */
+
+width: 456px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Участики уже видят первый вопрос. Вы можете их результаты после завершения квиза */
+
+width: 456px;
+height: 48px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330086 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 62px;
+gap: 10px;
+
+width: 459px;
+height: 61px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Вернуться к созданным квизам */
+
+width: 335px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 400;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
