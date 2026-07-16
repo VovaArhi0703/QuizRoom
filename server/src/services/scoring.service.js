@@ -16,7 +16,7 @@ function calculateAnswerScore(question, selectedOptionIds, answeredAt = new Date
   const isCorrect = areSameSet(correctOptionIds, selectedOptionIds);
 
   if (!isCorrect) {
-    return { isCorrect: false, points: -50 };
+    return { isCorrect: false, points: 0 };
   }
 
   const startedAt = question.startedAt ? new Date(question.startedAt) : null;

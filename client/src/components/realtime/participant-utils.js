@@ -1,12 +1,8 @@
-const fallbackColors = ["#E3E0FD", "#FCF0D3", "#F1F9C6", "#E7F0FB", "#EBCECD"];
+import { getProfileTheme } from "../../utils/profile-theme";
 
-const profileColorMap = {
-  green: { background: "#F1F9C6", border: "#28AB3C" },
-  violet: { background: "#E3E0FD", border: "#5849E1" },
-  blue: { background: "#E7F0FB", border: "#3C8AFF" },
-  yellow: { background: "#FCF0D3", border: "#F49907" },
-  red: { background: "#EBCECD", border: "#BD4243" },
-};
+export function getParticipantTheme(participant, index = 0) {
+  return getProfileTheme(participant?.user?.profileColor, index);
+}
 
 export function getParticipantName(participant) {
   return participant.user?.name || participant.guestName || "Участник";
@@ -32,12 +28,12 @@ export function getParticipantsLabel(count) {
 }
 
 export function getParticipantAvatarStyle(participant, index = 0) {
-  const profileColor = profileColorMap[participant.user?.profileColor];
-  const fallbackIndex = Math.max(0, index) % fallbackColors.length;
+  const theme = getParticipantTheme(participant, index);
 
   return {
-    backgroundColor: profileColor?.background || fallbackColors[fallbackIndex],
-    borderColor: profileColor ? `${profileColor.border}33` : "rgba(88, 73, 225, 0.2)",
+    "--user-avatar-bg": theme.background,
+    "--user-avatar-border": theme.border,
+    "--user-avatar-color": theme.foreground,
   };
 }
 

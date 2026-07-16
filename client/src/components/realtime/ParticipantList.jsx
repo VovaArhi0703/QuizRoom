@@ -1,5 +1,5 @@
-import userIcon from "../../assets/Gathering_participants/user.svg";
-import { getParticipantAvatarStyle, getParticipantName } from "./participant-utils";
+import { UserAvatar } from "../UserAvatar";
+import { getParticipantName } from "./participant-utils";
 
 function getJoinedTime(participant) {
   if (!participant.joinedAt) {
@@ -21,9 +21,12 @@ export function ParticipantList({ participants, className = "" }) {
         {participants.map((participant, index) => (
           <article className="gathering-participant-row" key={participant.id}>
             <div className="gathering-participant-name">
-              <span className="gathering-avatar" style={getParticipantAvatarStyle(participant, index)}>
-                <img src={userIcon} alt="" />
-              </span>
+              <UserAvatar
+                className="gathering-avatar"
+                fallbackIndex={index}
+                name={getParticipantName(participant)}
+                user={participant.user}
+              />
               <strong>{getParticipantName(participant)}</strong>
             </div>
             <div className="gathering-participant-status">

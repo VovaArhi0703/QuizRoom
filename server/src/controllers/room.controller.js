@@ -4,6 +4,10 @@ const { asyncHandler } = require("../utils/asyncHandler");
 const { withDatabaseRetry } = require("../utils/databaseRetry");
 const { HttpError } = require("../utils/httpError");
 const { invalidateCachedData } = require("../utils/dataCache");
+const {
+  dedupeParticipants,
+  sortLeaderboard,
+} = require("../utils/participantResults");
 
 async function createUniqueRoomCode() {
   for (let attempt = 0; attempt < 8; attempt += 1) {
@@ -82,6 +86,7 @@ const getRoom = asyncHandler(async (req, res) => {
                   id: true,
                   name: true,
                   profileColor: true,
+                  avatarUrl: true,
                 },
               },
             },
@@ -117,6 +122,7 @@ const getRoomResults = asyncHandler(async (req, res) => {
                   id: true,
                   name: true,
                   profileColor: true,
+                  avatarUrl: true,
                 },
               },
               answers: {
@@ -140,7 +146,14 @@ const getRoomResults = asyncHandler(async (req, res) => {
     throw new HttpError(404, "Room was not found");
   }
 
-  res.json({ room });
+  const participants = sortLeaderboard(dedupeParticipants(room.participants));
+
+  res.json({
+    room: {
+      ...room,
+      participants,
+    },
+  });
 });
 
 module.exports = { createRoom, getRoom, getRoomResults };

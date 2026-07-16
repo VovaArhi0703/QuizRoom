@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { invalidateCached } from "../api/queryCache";
 import { createSocket } from "../sockets/socket";
 import { ParticipantList } from "../components/realtime/ParticipantList";
 import { getParticipantsLabel, translateRealtimeError } from "../components/realtime/participant-utils";
@@ -77,10 +78,14 @@ export function HostRoomPage() {
       setParticipants(payload.leaderboard || payload.participants || []);
     });
     socket.on("quiz:finished", (payload) => {
+      invalidateCached("/quizzes");
+      invalidateCached("/profile/history");
       setRoomState(payload.room);
       setParticipants(payload.participants || payload.leaderboard || []);
     });
     socket.on("room:closed", (payload) => {
+      invalidateCached("/quizzes");
+      invalidateCached("/profile/history");
       setRoomState(payload.room);
       setError(payload.message || "Комната закрыта");
     });

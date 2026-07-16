@@ -1,105 +1,103 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BarChart3, FileQuestion, Trophy } from "lucide-react";
 import { getCached } from "../api/queryCache";
+import {
+  OverviewEmptyState,
+  OverviewLoading,
+  OverviewStatsPanel,
+  QuizTagList,
+  QuizThemeIcon,
+} from "../components/QuizOverviewUi";
+import { formatOverviewDate } from "../utils/overview-format";
+import activityIcon from "../assets/history_quiz_screen/arrow_up.svg";
+import quizStatIcon from "../assets/history_quiz_screen/quiz.svg";
+import speedIcon from "../assets/history_quiz_screen/speedometer.svg";
+import questionIcon from "../assets/history_quiz_screen/question.svg";
+import questionMetaIcon from "../assets/history_quiz_screen/question_statistic.svg";
+import dateIcon from "../assets/history_quiz_screen/date.svg";
+import winIcon from "../assets/history_quiz_screen/win_mini.svg";
+import starIcon from "../assets/history_quiz_screen/star.svg";
+import leaderboardIcon from "../assets/history_quiz_screen/back_arrow.svg";
+import historyImage from "../assets/history_quiz_screen/history_image.png";
+
+const emptyStats = { quizzesCompleted: 0, averageAccuracy: 0, totalQuestionsAnswered: 0, topOneCount: 0 };
 
 export function HistoryPage() {
-  const [history, setHistory] = useState({ organizedRooms: [], participations: [] });
+  const [history, setHistory] = useState({ participations: [], participantStats: emptyStats });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let isActive = true;
-
-    async function loadHistory() {
-      try {
-        const data = await getCached("/profile/history");
-
-        if (!isActive) {
-          return;
-        }
-
-        setHistory(data);
-      } catch (requestError) {
-        if (isActive) {
-          setError(requestError.message);
-        }
-      }
-    }
-
-    loadHistory();
-
-    return () => {
-      isActive = false;
-    };
+    let active = true;
+    getCached("/profile/history")
+      .then((data) => { if (active) setHistory(data); })
+      .catch((requestError) => { if (active) setError(requestError.message); })
+      .finally(() => { if (active) setIsLoading(false); });
+    return () => { active = false; };
   }, []);
 
-  const stats = useMemo(() => {
-    const played = history.participations.length;
-    const hosted = history.organizedRooms.length;
-    const bestScore = history.participations.reduce((max, item) => Math.max(max, item.score), 0);
-    return { played, hosted, bestScore };
-  }, [history]);
+  const stats = { ...emptyStats, ...history.participantStats };
+  const statItems = [
+    { icon: quizStatIcon, value: stats.quizzesCompleted, label: "Пройдено квизов" },
+    { icon: speedIcon, value: `${stats.averageAccuracy}%`, label: "Средний результат" },
+    { icon: questionIcon, value: stats.totalQuestionsAnswered, label: "Всего вопросов" },
+    { icon: winIcon, value: stats.topOneCount, label: "Занял топ 1" },
+  ];
 
   return (
-    <section className="content-stack">
-      <div className="dashboard-grid">
-        <article className="panel content-stack">
-          <div className="section-title">
-            <BarChart3 size={28} />
-            <div>
-              <h2>Общая активность</h2>
-              <p className="muted">Здесь находится история по пройденным и проведенным квизам</p>
-            </div>
+    <section className="overview-screen overview-list-screen">
+      <div className="overview-hero-row">
+        <OverviewStatsPanel
+          title="Общая активность"
+          description="Здесь находится общая активность по пройденным квизам"
+          icon={activityIcon}
+          items={statItems}
+        />
+        <aside className="overview-action-banner history-action-banner">
+          <img src={historyImage} alt="" />
+          <div>
+            <h1>Присоединись к комнате</h1>
+            <p>Присоединяйся, отвечай на вопросы и борись за лидерство</p>
+            <Link to="/join">Присоединиться</Link>
           </div>
-          <div className="metric-row compact-metrics">
-            <Metric label="Пройдено квизов" value={stats.played} />
-            <Metric label="Проведено комнат" value={stats.hosted} />
-            <Metric label="Лучший балл" value={stats.bestScore} />
-          </div>
-        </article>
-        <aside className="panel dark-callout wide-action">
-          <h2>Присоединитесь к комнате</h2>
-          <p>Отвечайте на вопросы и боритесь за лидерство</p>
-          <Link className="primary-button" to="/join">
-            Присоединиться
-          </Link>
         </aside>
       </div>
 
-      {error ? <p className="error-text">{error}</p> : null}
-
-      <div className="quiz-card-grid">
-        {history.participations.map((item) => (
-          <article className="quiz-card" key={item.id}>
-            <div className="quiz-card-icon">
-              <FileQuestion size={34} />
-            </div>
-            <div className="quiz-card-main">
-              <h2>{item.room.quiz.title}</h2>
-              <p className="quiz-meta">
-                <span>Пройден {new Date(item.joinedAt).toLocaleDateString("ru-RU")}</span>
-                <span>{item.score} баллов</span>
-              </p>
-            </div>
-            <Link className="primary-button compact" to={`/results/${item.room.code}`}>
-              <Trophy size={16} />
-              Посмотреть лидерборд
-            </Link>
-          </article>
-        ))}
-        {history.participations.length === 0 ? (
-          <p className="screen-state">Вы еще не проходили квизы.</p>
-        ) : null}
-      </div>
+      {error ? <p className="overview-error" role="alert">{error}</p> : null}
+      {isLoading ? <OverviewLoading /> : null}
+      {!isLoading && history.participations?.length ? (
+        <div className="overview-card-grid">
+          {history.participations.map((participation) => (
+            <article className="overview-card history-overview-card" key={participation.id}>
+              <div className="overview-card-heading">
+                <QuizThemeIcon category={participation.room.quiz.category} source="history" />
+                <div>
+                  <h2>{participation.room.quiz.title}</h2>
+                  <div className="overview-tags"><QuizTagList category={participation.room.quiz.category} /></div>
+                </div>
+              </div>
+              <div className="overview-card-lower">
+                <div className="overview-card-meta">
+                  <span><img src={questionMetaIcon} alt="" />{participation.questionCount} вопросов</span>
+                  <span><img src={dateIcon} alt="" />Пройден {formatOverviewDate(participation.completedAt)}</span>
+                  <span><img src={starIcon} alt="" />{participation.score} баллов</span>
+                </div>
+                <Link className="overview-card-primary" to={`/results/${participation.room.code}`}>
+                  <img src={leaderboardIcon} alt="" />
+                  Посмотреть лидерборд
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+      {!isLoading && !history.participations?.length ? (
+        <OverviewEmptyState
+          title="История игр пока пуста"
+          text="Здесь появятся карточки завершённых квизов и ссылки на их лидерборды."
+          action={<Link className="overview-primary-action" to="/join">Подключиться к комнате</Link>}
+        />
+      ) : null}
     </section>
-  );
-}
-
-function Metric({ label, value }) {
-  return (
-    <article className="mini-metric">
-      <strong>{value}</strong>
-      <span>{label}</span>
-    </article>
   );
 }

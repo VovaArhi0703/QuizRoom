@@ -1,0 +1,3583 @@
+На нём мы отображаем сколько прошли квизов, сколько всего вопросов ответили, сколько топ 1 у нас. История квизов там краткая инфа по прохождению и при нажатии на лидерборд по нему переходим. цвета квиза определяются по первому тегу в нём. все нужные svg и png находятся в папке main_screen. ниже код из фигма
+
+
+/* 12c / 24g / 240m */
+
+position: relative;
+width: 1920px;
+height: 1080px;
+left: 316px;
+top: 371px;
+
+background: #F5F5F3;
+
+
+/* Rectangle 4 */
+
+position: absolute;
+width: 316px;
+height: 1016px;
+left: 48px;
+top: 32px;
+
+background: #201F31;
+border-radius: 36px;
+
+
+/* sidebar */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+align-items: flex-start;
+padding: 20px;
+gap: 434px;
+
+position: absolute;
+width: 316px;
+height: 1016px;
+left: 48px;
+top: 32px;
+
+
+
+/* Frame 2131330033 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 27px;
+
+margin: 0 auto;
+width: 276px;
+height: 303px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330023 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 13px;
+
+width: 276px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330022 */
+
+width: 68px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+background: #F9F8FE;
+transform: matrix(1, 0, 0, -1, 0, 0);
+
+
+/* Vector */
+
+position: absolute;
+left: 23.22%;
+right: 57.64%;
+top: 23.86%;
+bottom: 47.93%;
+
+background: #F1CCBF;
+transform: matrix(1, 0, 0, -1, 0, 0);
+
+
+/* Vector */
+
+position: absolute;
+left: 29.31%;
+right: 63.76%;
+top: 55.35%;
+bottom: 35.74%;
+
+background: #F1CCBF;
+transform: matrix(1, 0, 0, -1, 0, 0);
+
+
+/* QuizRoom */
+
+width: 195px;
+height: 40px;
+
+font-family: 'Unbounded';
+font-style: normal;
+font-weight: 400;
+font-size: 32px;
+line-height: 40px;
+/* identical to box height */
+
+color: #F9F8FE;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330032 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 276px;
+height: 224px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Component 5 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+width: 276px;
+height: 56px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* material-symbols:home-rounded */
+
+width: 32px;
+height: 32px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 14.58%;
+bottom: 12.5%;
+
+background: #201F31;
+
+
+/* Главная */
+
+width: 82px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Component 6 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+width: 276px;
+height: 56px;
+
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* solar:user-bold */
+
+width: 32px;
+height: 32px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 33.33%;
+right: 33.33%;
+top: 8.33%;
+bottom: 58.33%;
+
+background: #F9F8FE;
+
+
+/* Vector */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 54.17%;
+bottom: 8.33%;
+
+background: #F9F8FE;
+
+
+/* Профиль */
+
+width: 95px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #F9F8FE;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Component 7 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+width: 276px;
+height: 56px;
+
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* material-symbols:history-rounded */
+
+width: 32px;
+height: 32px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 12.5%;
+bottom: 12.5%;
+
+background: #F9F8FE;
+
+
+/* История игр */
+
+width: 130px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #F9F8FE;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Component 8 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 12px;
+gap: 8px;
+
+width: 276px;
+height: 56px;
+
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* famicons:create */
+
+width: 32px;
+height: 32px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 40.62%;
+right: 9.37%;
+top: 9.38%;
+bottom: 40.62%;
+
+background: #F9F8FE;
+
+
+/* Vector */
+
+position: absolute;
+left: 9.38%;
+right: 21.88%;
+top: 21.88%;
+bottom: 9.38%;
+
+background: #F9F8FE;
+
+
+/* Созданные квизы */
+
+width: 185px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #F9F8FE;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330024 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+isolation: isolate;
+
+margin: 0 auto;
+width: 276px;
+height: 226px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330025 */
+
+width: 68px;
+height: 68px;
+
+background: #F9F8FE;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+margin: -34px 0px;
+z-index: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 27.94%;
+right: 45.59%;
+top: 27.94%;
+bottom: 36.76%;
+
+border: 2.25px solid #201F31;
+transform: rotate(45deg);
+
+
+/* Subtract */
+
+width: 276px;
+height: 192px;
+
+background: #DAF276;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Rectangle 38 */
+
+position: absolute;
+width: 276px;
+height: 192px;
+left: 0px;
+top: 34px;
+
+background: #DAF276;
+border-radius: 16px;
+
+
+/* Ellipse 3 */
+
+position: absolute;
+width: 83.21px;
+height: 82px;
+left: 96.4px;
+top: -7px;
+
+background: #D9D9D9;
+
+
+/* Frame 2131330026 */
+
+position: absolute;
+width: 120px;
+height: 186px;
+left: 158px;
+top: 37px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 29.03%;
+
+background: #F9F8FE;
+transform: matrix(1, 0, 0, -1, 0, 0);
+
+
+/* Vector */
+
+position: absolute;
+height: 42px;
+left: 32.5%;
+right: 32.5%;
+top: calc(50% - 42px/2 + 72px);
+
+background: #F9F8FE;
+transform: matrix(1, 0, 0, -1, 0, 0);
+
+
+/* Подключиться к комнате */
+
+position: absolute;
+width: 223px;
+height: 60px;
+left: 13px;
+top: 89px;
+
+font-family: 'Unbounded';
+font-style: normal;
+font-weight: 400;
+font-size: 24px;
+line-height: 30px;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+z-index: 3;
+
+
+/* Vector 2 */
+
+position: absolute;
+width: 176px;
+height: 77px;
+left: 13px;
+top: 149px;
+
+background: #F9F8FE;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+flex-grow: 0;
+z-index: 4;
+
+
+/* Frame 2131330195 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 36px;
+
+position: absolute;
+width: 1475px;
+height: 967px;
+left: 412px;
+top: 32px;
+
+
+
+/* Frame 3 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 0px;
+gap: 906px;
+
+width: 1475px;
+height: 76px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* QuizRoom */
+
+width: 328px;
+height: 67px;
+
+font-family: 'Unbounded';
+font-style: normal;
+font-weight: 400;
+font-size: 54px;
+line-height: 67px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 2 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 14px;
+
+width: 300px;
+height: 76px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-end;
+padding: 0px;
+
+width: 210px;
+height: 53px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Владимир Архипов */
+
+width: 210px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 400;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* ID:896358 */
+
+width: 210px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+text-align: right;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Ellipse 2 */
+
+width: 76px;
+height: 76px;
+
+background: url(image.png);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330194 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 28px;
+
+width: 1475px;
+height: 855px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330190 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+gap: 28px;
+
+width: 1460px;
+height: 296px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 2131330182 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 20px;
+gap: 20px;
+
+width: 964px;
+height: 292px;
+
+background: #FFFFFF;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 36px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 2131330185 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 20px;
+
+width: 637px;
+height: 252px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 2131330176 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 12px;
+
+width: 572px;
+height: 132px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Ellipse 2 */
+
+width: 132px;
+height: 132px;
+
+background: url(image.png);
+border: 4px solid #E3E0FD;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 2131330175 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 9px;
+
+width: 428px;
+height: 128px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330174 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 308px;
+height: 67px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Владимир Архипов */
+
+width: 308px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* ID:896358 */
+
+width: 308px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330135 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 14px;
+
+width: 428px;
+height: 52px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* redecorate_main */
+
+width: 20px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: -0.01%;
+top: 0%;
+bottom: -0.01%;
+
+background: #000000;
+
+
+/* Редактировать профиль */
+
+width: 172px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330181 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 20px;
+
+width: 637px;
+height: 100px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330178 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 24px;
+gap: 16px;
+
+width: 175px;
+height: 100px;
+
+background: #E3E0FD;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* quiz */
+
+width: 44px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 13.71%;
+right: 61.14%;
+top: 24%;
+bottom: 24%;
+
+border: 4px solid #5849E1;
+
+
+/* Vector */
+
+position: absolute;
+left: 29.43%;
+right: 61.14%;
+top: 24%;
+bottom: 60.4%;
+
+border: 4px solid #5849E1;
+
+
+/* Frame 2131330177 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 67px;
+height: 48px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 12 */
+
+width: 67px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Квизов */
+
+width: 67px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330179 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 24px;
+gap: 16px;
+
+width: 227px;
+height: 100px;
+
+background: #E7F0FB;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* question */
+
+width: 52px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+height: 52px;
+left: 0%;
+right: 0%;
+top: calc(50% - 52px/2);
+
+background: #3C8AFF;
+
+
+/* Frame 2131330177 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 111px;
+height: 48px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 126 */
+
+width: 111px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Всего вопросов */
+
+width: 111px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330180 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 24px;
+gap: 16px;
+
+width: 195px;
+height: 100px;
+
+background: #FCF0D3;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* win */
+
+width: 52px;
+height: 52px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+height: 52px;
+left: 0%;
+right: 0%;
+top: calc(50% - 52px/2);
+
+background: #F49907;
+
+
+/* Vector */
+
+position: absolute;
+left: 39.64%;
+right: 39.65%;
+top: 26.68%;
+bottom: 53.54%;
+
+background: #F49907;
+
+
+/* Frame 2131330177 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+width: 79px;
+height: 48px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Топ-1 */
+
+width: 79px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 6 раз */
+
+width: 37px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330183 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 18px;
+gap: 18px;
+isolation: isolate;
+
+width: 252px;
+height: 252px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330067 */
+
+position: absolute;
+width: 252px;
+height: 252px;
+left: calc(50% - 252px/2);
+top: calc(50% - 252px/2);
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Vector */
+
+position: absolute;
+width: 252px;
+height: 252px;
+left: 0px;
+top: 0px;
+
+background: #F1F9C6;
+
+
+/* Vector */
+
+position: absolute;
+width: 252px;
+height: 252px;
+left: 0px;
+top: 0px;
+
+background: #DAF276;
+
+
+/* Frame 2131330184 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 0px;
+
+width: 137px;
+height: 76px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+
+/* 9% */
+
+width: 137px;
+height: 57px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 400;
+font-size: 48px;
+line-height: 57px;
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Средний результат */
+
+width: 137px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330187 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 20px;
+gap: 6px;
+
+width: 468px;
+height: 296px;
+
+background: #201F31;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 36px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330189 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 6px 12px;
+gap: 7px;
+
+width: 166px;
+height: 32px;
+
+background: #DAF276;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* idea */
+
+width: 20px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 18.72%;
+right: 18.72%;
+top: 6.25%;
+bottom: 6.25%;
+
+background: #000000;
+
+
+/* Совет QuizRoom */
+
+width: 115px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330188 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 6px;
+
+width: 428px;
+height: 211px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Как подняться в лидерборде? */
+
+width: 428px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330186 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0px;
+
+width: 428px;
+height: 176px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Отвечайте не только правильно, но и быстрее. При равном количестве верных ответов время ответа влияет на итоговое место в квизе. */
+
+margin: 0 auto;
+width: 254px;
+height: 144px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* main_image */
+
+margin: 0 auto;
+width: 174px;
+height: 176px;
+
+background: url(image.png);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330251 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 20px;
+gap: 12px;
+
+width: 1475px;
+height: 531px;
+
+background: #FFFFFF;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 36px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Последние активности */
+
+width: 1435px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 400;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330192 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 20px;
+
+width: 1435px;
+height: 436px;
+
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330046 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0px 0px 12px;
+gap: 52px;
+
+width: 1395px;
+height: 72px;
+
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330191 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 794px;
+height: 60px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0px 1px;
+gap: 10px;
+
+width: 60px;
+height: 60px;
+
+background: #E3E0FD;
+border: 1px solid rgba(88, 73, 225, 0.2);
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* quiz_mini_purple */
+
+width: 36px;
+height: 36px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Group */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+border: 2px solid #5849E1;
+
+
+/* Vector */
+
+position: absolute;
+left: 58.59%;
+right: 15.62%;
+top: 9.38%;
+bottom: 66.25%;
+
+border: 2px solid #5849E1;
+
+
+/* История России */
+
+width: 710px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* 1 место */
+
+width: 105px;
+height: 38px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 32px;
+line-height: 38px;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330044 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 6px;
+
+width: 242px;
+height: 37px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 2131330043 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 0px;
+gap: 23px;
+
+width: 242px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 89% */
+
+margin: 0 auto;
+width: 40px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Правильных ответов */
+
+margin: 0 auto;
+width: 179px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330007 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 242px;
+height: 7px;
+
+background: #F1F9C6;
+border-radius: 15px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 37 */
+
+width: 95px;
+height: 7px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2131330045 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 6px;
+
+width: 98px;
+height: 60px;
+
+background: #E3E0FD;
+border: 1px solid rgba(88, 73, 225, 0.2);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Баллов */
+
+width: 51px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 2145 */
+
+width: 86px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330193 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 0px;
+gap: 52px;
+
+width: 1395px;
+height: 84px;
+
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330191 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 794px;
+height: 60px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0px 1px;
+gap: 10px;
+
+width: 60px;
+height: 60px;
+
+background: #FCF0D3;
+border: 1px solid rgba(244, 153, 7, 0.2);
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* quiz_mini_orange */
+
+width: 36px;
+height: 36px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Group */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+border: 2px solid #F49907;
+
+
+/* Vector */
+
+position: absolute;
+left: 58.59%;
+right: 15.62%;
+top: 9.38%;
+bottom: 66.25%;
+
+border: 2px solid #F49907;
+
+
+/* История России */
+
+width: 710px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* 1 место */
+
+width: 105px;
+height: 38px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 32px;
+line-height: 38px;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330044 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 6px;
+
+width: 242px;
+height: 37px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 2131330043 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 0px;
+gap: 23px;
+
+width: 242px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 89% */
+
+margin: 0 auto;
+width: 40px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Правильных ответов */
+
+margin: 0 auto;
+width: 179px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330007 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 242px;
+height: 7px;
+
+background: #F1F9C6;
+border-radius: 15px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 37 */
+
+width: 95px;
+height: 7px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2131330045 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 6px;
+
+width: 98px;
+height: 60px;
+
+background: #FCF0D3;
+border: 1px solid rgba(244, 153, 7, 0.2);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Баллов */
+
+width: 51px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 2145 */
+
+width: 86px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330194 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 0px;
+gap: 52px;
+
+width: 1395px;
+height: 84px;
+
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330191 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 794px;
+height: 60px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0px 1px;
+gap: 10px;
+
+width: 60px;
+height: 60px;
+
+background: #F1F9C6;
+border: 1px solid rgba(92, 108, 0, 0.2);
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* quiz_mini_green */
+
+width: 36px;
+height: 36px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Group */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+border: 2px solid #28AB3C;
+
+
+/* Vector */
+
+position: absolute;
+left: 58.59%;
+right: 15.62%;
+top: 9.38%;
+bottom: 66.25%;
+
+border: 2px solid #28AB3C;
+
+
+/* История России */
+
+width: 710px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* 1 место */
+
+width: 105px;
+height: 38px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 32px;
+line-height: 38px;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330044 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 6px;
+
+width: 242px;
+height: 37px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 2131330043 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 0px;
+gap: 23px;
+
+width: 242px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 89% */
+
+margin: 0 auto;
+width: 40px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Правильных ответов */
+
+margin: 0 auto;
+width: 179px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330007 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 242px;
+height: 7px;
+
+background: #F1F9C6;
+border-radius: 15px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 37 */
+
+width: 95px;
+height: 7px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2131330045 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 6px;
+
+width: 98px;
+height: 60px;
+
+background: #F1F9C6;
+border: 1px solid rgba(92, 108, 0, 0.2);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Баллов */
+
+width: 51px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 2145 */
+
+width: 86px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330195 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 0px;
+gap: 52px;
+
+width: 1395px;
+height: 84px;
+
+border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330191 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 794px;
+height: 60px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0px 1px;
+gap: 10px;
+
+width: 60px;
+height: 60px;
+
+background: #E7F0FB;
+border: 1px solid rgba(63, 103, 244, 0.2);
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* quiz_mini_blue */
+
+width: 36px;
+height: 36px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Group */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+border: 2px solid #3F67F4;
+
+
+/* Vector */
+
+position: absolute;
+left: 58.59%;
+right: 15.62%;
+top: 9.38%;
+bottom: 66.25%;
+
+border: 2px solid #3F67F4;
+
+
+/* История России */
+
+width: 710px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* 1 место */
+
+width: 105px;
+height: 38px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 32px;
+line-height: 38px;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330044 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 6px;
+
+width: 242px;
+height: 37px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 2131330043 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 0px;
+gap: 23px;
+
+width: 242px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 89% */
+
+margin: 0 auto;
+width: 40px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Правильных ответов */
+
+margin: 0 auto;
+width: 179px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330007 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 242px;
+height: 7px;
+
+background: #F1F9C6;
+border-radius: 15px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 37 */
+
+width: 95px;
+height: 7px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2131330045 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 6px;
+
+width: 98px;
+height: 60px;
+
+background: #E7F0FB;
+border: 1px solid rgba(63, 103, 244, 0.2);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Баллов */
+
+width: 51px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 2145 */
+
+width: 86px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330191 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 0px 0px;
+gap: 52px;
+
+width: 1395px;
+height: 72px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330191 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 794px;
+height: 60px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0px 1px;
+gap: 10px;
+
+width: 60px;
+height: 60px;
+
+background: #EBCECD;
+border: 1px solid rgba(189, 66, 67, 0.2);
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* quiz_mini_red */
+
+width: 36px;
+height: 36px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Group */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 15.62%;
+right: 15.62%;
+top: 9.38%;
+bottom: 9.38%;
+
+border: 2px solid #BD4243;
+
+
+/* Vector */
+
+position: absolute;
+left: 58.59%;
+right: 15.62%;
+top: 9.38%;
+bottom: 66.25%;
+
+border: 2px solid #BD4243;
+
+
+/* История России */
+
+width: 710px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* 1 место */
+
+width: 105px;
+height: 38px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 32px;
+line-height: 38px;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330044 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 6px;
+
+width: 242px;
+height: 37px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 2131330043 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 0px;
+gap: 23px;
+
+width: 242px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 89% */
+
+margin: 0 auto;
+width: 40px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Правильных ответов */
+
+margin: 0 auto;
+width: 179px;
+height: 24px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 20px;
+line-height: 24px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 2131330007 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 242px;
+height: 7px;
+
+background: #F1F9C6;
+border-radius: 15px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 37 */
+
+width: 95px;
+height: 7px;
+
+background: #DAF276;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 2131330045 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 6px;
+
+width: 98px;
+height: 60px;
+
+background: #EBCECD;
+border: 1px solid rgba(189, 66, 67, 0.2);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Баллов */
+
+width: 51px;
+height: 19px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 16px;
+line-height: 19px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 2145 */
+
+width: 86px;
+height: 29px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 500;
+font-size: 24px;
+line-height: 29px;
+/* identical to box height */
+text-align: center;
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+и код блока без игр:
+
+/* Frame 2131330193 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 20px;
+gap: 12px;
+
+position: relative;
+width: 1475px;
+height: 178px;
+left: 582px;
+top: 1580px;
+
+background: #FFFFFF;
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 36px;
+
+
+/* Последние активности */
+
+width: 1435px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 400;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: #201F31;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 2131330193 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 20px;
+
+width: 1435px;
+height: 83px;
+
+border: 1px solid rgba(0, 0, 0, 0.1);
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* После первого квиза тут появится активность */
+
+width: 718px;
+height: 43px;
+
+font-family: 'SF Pro Display';
+font-style: normal;
+font-weight: 300;
+font-size: 36px;
+line-height: 43px;
+/* identical to box height */
+
+color: rgba(0, 0, 0, 0.44);
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;

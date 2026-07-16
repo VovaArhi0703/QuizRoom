@@ -4,12 +4,18 @@ const { verifyToken } = require("../services/token.service");
 const { calculateAnswerScore } = require("../services/scoring.service");
 const { invalidateCachedData } = require("../utils/dataCache");
 const { withDatabaseRetry } = require("../utils/databaseRetry");
+const {
+  dedupeParticipants,
+  sortLeaderboard,
+} = require("../utils/participantResults");
 
 const socketParticipants = new Map();
 const socketHostRooms = new Map();
 const roomTimers = new Map();
 const answerQueues = new Map();
+const participantJoinQueues = new Map();
 const advancingRooms = new Set();
+const closingQuestions = new Set();
 const hostDisconnectTimers = new Map();
 
 function queryDatabase(operation) {
@@ -37,7 +43,7 @@ function publicQuestion(question) {
 }
 
 async function getLeaderboard(roomId) {
-  return queryDatabase(() => prisma.roomParticipant.findMany({
+  const participants = await queryDatabase(() => prisma.roomParticipant.findMany({
     where: { roomId },
     include: {
       user: {
@@ -45,6 +51,7 @@ async function getLeaderboard(roomId) {
           id: true,
           name: true,
           profileColor: true,
+          avatarUrl: true,
         },
       },
     },
@@ -53,10 +60,12 @@ async function getLeaderboard(roomId) {
       { joinedAt: "asc" },
     ],
   }));
+
+  return sortLeaderboard(dedupeParticipants(participants));
 }
 
 async function getParticipants(roomId) {
-  return queryDatabase(() => prisma.roomParticipant.findMany({
+  const participants = await queryDatabase(() => prisma.roomParticipant.findMany({
     where: { roomId },
     include: {
       user: {
@@ -64,17 +73,20 @@ async function getParticipants(roomId) {
           id: true,
           name: true,
           profileColor: true,
+          avatarUrl: true,
         },
       },
     },
     orderBy: { joinedAt: "asc" },
   }));
+
+  return dedupeParticipants(participants).sort(
+    (left, right) => new Date(left.joinedAt) - new Date(right.joinedAt),
+  );
 }
 
 function createLeaderboard(participants) {
-  return [...participants].sort(
-    (left, right) => right.score - left.score || new Date(left.joinedAt) - new Date(right.joinedAt),
-  );
+  return sortLeaderboard(participants);
 }
 
 function broadcastRoomState(io, room, participants) {
@@ -132,7 +144,7 @@ async function emitCurrentQuestion(io, room, loadedQuiz = null) {
   });
 }
 
-async function emitCurrentQuestionToSocket(socket, room, loadedQuiz = null) {
+async function emitCurrentQuestionToSocket(socket, room, loadedQuiz = null, participantId = null) {
   const quiz =
     loadedQuiz ||
     (await queryDatabase(() => prisma.quiz.findUnique({
@@ -150,11 +162,26 @@ async function emitCurrentQuestionToSocket(socket, room, loadedQuiz = null) {
     return;
   }
 
+  const savedAnswer = participantId
+    ? await queryDatabase(() =>
+        prisma.participantAnswer.findUnique({
+          where: {
+            roomParticipantId_questionId: {
+              roomParticipantId: participantId,
+              questionId: question.id,
+            },
+          },
+          select: { selectedOptionIds: true },
+        }),
+      )
+    : null;
+
   socket.emit("quiz:question-started", {
     index: room.currentQuestionIndex,
     total: quiz.questions.length,
     startedAt: room.currentQuestionStartedAt,
     question: publicQuestion(question),
+    selectedOptionIds: getSelectedOptionIds(savedAnswer),
   });
 }
 
@@ -167,35 +194,76 @@ function clearRoomTimer(roomId) {
   }
 }
 
-async function penalizeUnansweredParticipants(roomId, questionId) {
-  const participants = await queryDatabase(() => prisma.roomParticipant.findMany({
-    where: {
-      roomId,
-      answers: { none: { questionId } },
-    },
-    select: { id: true },
-  }));
+function getSelectedOptionIds(answer) {
+  return Array.isArray(answer?.selectedOptionIds)
+    ? answer.selectedOptionIds.map(String)
+    : [];
+}
 
-  if (participants.length === 0) {
-    return;
-  }
+async function finalizeQuestionAnswers(room, question) {
+  const startedAt = room.currentQuestionStartedAt || new Date();
 
-  const participantIds = participants.map((participant) => participant.id);
-  await queryDatabase(() => prisma.participantAnswer.createMany({
-    data: participantIds.map((roomParticipantId) => ({
-      id: randomUUID(),
-      roomParticipantId,
-      questionId,
-      selectedOptionIds: [],
-      isCorrect: false,
-      points: -50,
-    })),
-    skipDuplicates: true,
-  }));
-  await queryDatabase(() => prisma.roomParticipant.updateMany({
-    where: { id: { in: participantIds } },
-    data: { score: { decrement: 50 } },
-  }));
+  await queryDatabase(() =>
+    prisma.$transaction(async (tx) => {
+      const participants = await tx.roomParticipant.findMany({
+        where: { roomId: room.id },
+        include: {
+          answers: {
+            select: {
+              id: true,
+              questionId: true,
+              selectedOptionIds: true,
+              points: true,
+              answeredAt: true,
+            },
+          },
+        },
+      });
+
+      for (const participant of participants) {
+        const currentAnswer = participant.answers.find(
+          (answer) => answer.questionId === question.id,
+        );
+        const selectedOptionIds = getSelectedOptionIds(currentAnswer);
+        const score = calculateAnswerScore(
+          { ...question, startedAt },
+          selectedOptionIds,
+          currentAnswer?.answeredAt || new Date(),
+        );
+
+        await tx.participantAnswer.upsert({
+          where: {
+            roomParticipantId_questionId: {
+              roomParticipantId: participant.id,
+              questionId: question.id,
+            },
+          },
+          create: {
+            id: randomUUID(),
+            roomParticipantId: participant.id,
+            questionId: question.id,
+            selectedOptionIds,
+            isCorrect: score.isCorrect,
+            points: score.points,
+          },
+          update: {
+            selectedOptionIds,
+            isCorrect: score.isCorrect,
+            points: score.points,
+          },
+        });
+
+        const previousPoints = participant.answers
+          .filter((answer) => answer.questionId !== question.id)
+          .reduce((sum, answer) => sum + Math.max(0, Number(answer.points) || 0), 0);
+
+        await tx.roomParticipant.update({
+          where: { id: participant.id },
+          data: { score: previousPoints + score.points },
+        });
+      }
+    }),
+  );
 }
 
 async function waitForQuestionAnswers(questionId) {
@@ -239,6 +307,7 @@ async function advanceRoom(io, roomId) {
 
   advancingRooms.add(roomId);
   clearRoomTimer(roomId);
+  let closingQuestionId = null;
 
   try {
     const room = await queryDatabase(() => prisma.room.findUnique({
@@ -262,8 +331,10 @@ async function advanceRoom(io, roomId) {
     const currentQuestion = room.quiz.questions[room.currentQuestionIndex];
 
     if (currentQuestion) {
+      closingQuestionId = currentQuestion.id;
+      closingQuestions.add(closingQuestionId);
       await waitForQuestionAnswers(currentQuestion.id);
-      await penalizeUnansweredParticipants(room.id, currentQuestion.id);
+      await finalizeQuestionAnswers(room, currentQuestion);
     }
 
     const nextIndex = room.currentQuestionIndex + 1;
@@ -272,6 +343,12 @@ async function advanceRoom(io, roomId) {
       await finishRoom(io, room);
       return;
     }
+
+    const leaderboard = await getLeaderboard(room.id);
+    io.to(room.code).emit("leaderboard:updated", {
+      leaderboard,
+      settledQuestionId: currentQuestion?.id || null,
+    });
 
     const updatedRoom = await queryDatabase(() => prisma.room.update({
       where: { id: room.id },
@@ -285,12 +362,22 @@ async function advanceRoom(io, roomId) {
     await emitCurrentQuestion(io, updatedRoom, room.quiz);
     scheduleRoomProgression(io, updatedRoom, room.quiz);
   } finally {
+    if (closingQuestionId) {
+      closingQuestions.delete(closingQuestionId);
+    }
     advancingRooms.delete(roomId);
   }
 }
 
 function runRoomAdvance(io, roomId, attempt = 1) {
-  advanceRoom(io, roomId).catch(() => {
+  advanceRoom(io, roomId).catch((error) => {
+    console.error(`Could not advance room ${roomId} (attempt ${attempt}):`, error.message);
+
+    if (attempt >= 4) {
+      roomTimers.delete(roomId);
+      return;
+    }
+
     const retryDelay = Math.min(750 * attempt, 5_000);
     const retryTimer = setTimeout(() => runRoomAdvance(io, roomId, attempt + 1), retryDelay);
     roomTimers.set(roomId, retryTimer);
@@ -325,6 +412,20 @@ function queueParticipantAnswer(key, operation) {
   const cleanup = () => {
     if (answerQueues.get(key) === current) {
       answerQueues.delete(key);
+    }
+  };
+  current.then(cleanup, cleanup);
+
+  return current;
+}
+
+function queueParticipantJoin(key, operation) {
+  const previous = participantJoinQueues.get(key) || Promise.resolve();
+  const current = previous.catch(() => {}).then(operation);
+  participantJoinQueues.set(key, current);
+  const cleanup = () => {
+    if (participantJoinQueues.get(key) === current) {
+      participantJoinQueues.delete(key);
     }
   };
   current.then(cleanup, cleanup);
@@ -527,33 +628,37 @@ function registerSockets(io) {
           throw new Error("Room is already finished");
         }
 
-        let participant = null;
+        const joinKey = socket.user?.id
+          ? `${room.id}:user:${socket.user.id}`
+          : `${room.id}:socket:${socket.id}`;
+        const participant = await queueParticipantJoin(joinKey, async () => {
+          if (socket.user?.id) {
+            const existingParticipant = await queryDatabase(() =>
+              prisma.roomParticipant.findFirst({
+                where: {
+                  roomId: room.id,
+                  userId: socket.user.id,
+                },
+                orderBy: { joinedAt: "asc" },
+              }),
+            );
 
-        if (socket.user?.id) {
-          participant = await queryDatabase(() => prisma.roomParticipant.findFirst({
-            where: {
-              roomId: room.id,
-              userId: socket.user.id,
-            },
-            orderBy: { joinedAt: "asc" },
-          }));
-        }
+            if (existingParticipant) {
+              return existingParticipant;
+            }
+          }
 
-        if (!participant) {
-          const participantId = randomUUID();
-          participant = await queryDatabase(() =>
-            prisma.roomParticipant.upsert({
-              where: { id: participantId },
-              create: {
-                id: participantId,
+          return queryDatabase(() =>
+            prisma.roomParticipant.create({
+              data: {
+                id: randomUUID(),
                 roomId: room.id,
                 userId: socket.user?.id,
-                guestName: guestName || "Guest",
+                guestName: socket.user?.id ? null : guestName || "Guest",
               },
-              update: {},
-            },
-          ));
-        }
+            }),
+          );
+        });
 
         socketParticipants.set(socket.id, participant.id);
         socket.join(room.code);
@@ -565,12 +670,12 @@ function registerSockets(io) {
 
         if (room.status === "ACTIVE") {
           scheduleRoomProgression(io, room, room.quiz);
-          await emitCurrentQuestionToSocket(socket, room, room.quiz);
+          await emitCurrentQuestionToSocket(socket, room, room.quiz, participant.id);
         }
 
         callback?.({
           ok: true,
-          participant,
+          participant: participants.find((item) => item.id === participant.id) || participant,
           room: {
             id: room.id,
             code: room.code,
@@ -727,24 +832,22 @@ function registerSockets(io) {
           throw new Error("Answer time is over");
         }
 
-        const score = calculateAnswerScore(
-          { ...question, startedAt },
-          Array.isArray(selectedOptionIds) ? selectedOptionIds : [],
-        );
+        const validOptionIds = new Set(question.options.map((option) => option.id));
+        const answerIds = [...new Set(
+          (Array.isArray(selectedOptionIds) ? selectedOptionIds : [])
+            .map(String)
+            .filter((optionId) => validOptionIds.has(optionId)),
+        )];
 
-        const answerIds = Array.isArray(selectedOptionIds) ? selectedOptionIds : [];
+        if (question.type === "SINGLE" && answerIds.length > 1) {
+          throw new Error("Only one answer can be selected");
+        }
+
+        if (closingQuestions.has(questionId)) {
+          throw new Error("Answer time is over");
+        }
+
         await queueParticipantAnswer(`${participantId}:${questionId}`, async () => {
-          const previousAnswer = await queryDatabase(() => prisma.participantAnswer.findUnique({
-            where: {
-              roomParticipantId_questionId: {
-                roomParticipantId: participantId,
-                questionId,
-              },
-            },
-            select: { points: true },
-          }));
-          const scoreDelta = score.points - (previousAnswer?.points || 0);
-
           await queryDatabase(() => prisma.participantAnswer.upsert({
             where: {
               roomParticipantId_questionId: {
@@ -756,28 +859,19 @@ function registerSockets(io) {
               roomParticipantId: participantId,
               questionId,
               selectedOptionIds: answerIds,
-              isCorrect: score.isCorrect,
-              points: score.points,
+              isCorrect: false,
+              points: 0,
             },
             update: {
               selectedOptionIds: answerIds,
-              isCorrect: score.isCorrect,
-              points: score.points,
+              isCorrect: false,
+              points: 0,
               answeredAt: new Date(),
             },
           }));
-
-          if (scoreDelta !== 0) {
-            await queryDatabase(() => prisma.roomParticipant.update({
-              where: { id: participantId },
-              data: { score: { increment: scoreDelta } },
-            }));
-          }
         });
 
-        const leaderboard = await getLeaderboard(room.id);
-        io.to(room.code).emit("leaderboard:updated", { leaderboard });
-        callback?.({ ok: true, ...score });
+        callback?.({ ok: true, saved: true });
       } catch (error) {
         callback?.({ ok: false, message: error.message });
       }
@@ -787,6 +881,16 @@ function registerSockets(io) {
       try {
         const room = await queryDatabase(() => prisma.room.findUnique({
           where: { code: String(code || "").toUpperCase() },
+          include: {
+            quiz: {
+              include: {
+                questions: {
+                  orderBy: { order: "asc" },
+                  include: { options: true },
+                },
+              },
+            },
+          },
         }));
 
         if (!room) {
@@ -795,6 +899,24 @@ function registerSockets(io) {
 
         if (!socket.user || socket.user.id !== room.hostId) {
           throw new Error("Only room host can finish quiz");
+        }
+
+        const currentQuestion = room.quiz.questions[room.currentQuestionIndex];
+
+        if (room.status === "ACTIVE" && currentQuestion) {
+          clearRoomTimer(room.id);
+          closingQuestions.add(currentQuestion.id);
+          try {
+            await waitForQuestionAnswers(currentQuestion.id);
+            await finalizeQuestionAnswers(room, currentQuestion);
+            const leaderboard = await getLeaderboard(room.id);
+            io.to(room.code).emit("leaderboard:updated", {
+              leaderboard,
+              settledQuestionId: currentQuestion.id,
+            });
+          } finally {
+            closingQuestions.delete(currentQuestion.id);
+          }
         }
 
         await finishRoom(io, room);

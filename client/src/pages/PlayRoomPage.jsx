@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { invalidateCached } from "../api/queryCache";
 import { ParticipantList } from "../components/realtime/ParticipantList";
 import { getParticipantsLabel, translateRealtimeError } from "../components/realtime/participant-utils";
 import { useAuth } from "../features/auth/auth-context";
@@ -36,6 +37,7 @@ export function PlayRoomPage() {
   const { user } = useAuth();
   const socketRef = useRef(null);
   const participantIdRef = useRef(null);
+  const answerRevisionRef = useRef(0);
   const allowLeaveRef = useRef(false);
   const historyGuardRef = useRef(false);
   const [roomState, setRoomState] = useState(null);
@@ -52,12 +54,13 @@ export function PlayRoomPage() {
   const question = questionPayload?.question;
   const isMultiple = question?.type === "MULTIPLE";
   const shouldWarnOnLeave = Boolean(participant) && roomState?.status !== "FINISHED";
-  const ownLeaderboardIndex = leaderboard.findIndex(
-    (item) => item.id === participant?.id || (user?.id && item.userId === user.id),
-  );
+  const ownLeaderboardIndex = user?.id
+    ? leaderboard.findIndex((item) => item.userId === user.id)
+    : leaderboard.findIndex((item) => item.id === participant?.id);
   const ownParticipant = ownLeaderboardIndex >= 0 ? leaderboard[ownLeaderboardIndex] : participant;
   const totalQuestions = questionPayload?.total || 0;
-  const progress = question ? Math.max(0, Math.min(100, (secondsLeft / Math.max(1, question.timeLimit)) * 100)) : 0;
+  const completedQuestions = Math.max(0, Math.min(totalQuestions, questionPayload?.index || 0));
+  const questionProgress = totalQuestions > 0 ? (completedQuestions / totalQuestions) * 100 : 0;
   const possibleScore = totalQuestions * 115;
 
   const leaveRoomBeforeNavigation = useCallback(
@@ -119,14 +122,23 @@ export function PlayRoomPage() {
       setParticipants((current) => current.filter((item) => item.id !== participantId));
     });
     socket.on("quiz:question-started", (payload) => {
+      answerRevisionRef.current += 1;
       setQuestionPayload(payload);
-      setSelectedIds([]);
+      setSelectedIds(Array.isArray(payload.selectedOptionIds) ? payload.selectedOptionIds : []);
       setAnswerState(null);
       setSecondsLeft(getTimeLeft(payload));
       setError("");
     });
-    socket.on("leaderboard:updated", (payload) => setLeaderboard(payload.leaderboard || []));
+    socket.on("leaderboard:updated", (payload) => {
+      setLeaderboard(payload.leaderboard || []);
+      setAnswerState((current) => ({
+        ...current,
+        saving: false,
+        settled: Boolean(payload.settledQuestionId),
+      }));
+    });
     socket.on("quiz:finished", (payload) => {
+      invalidateCached("/profile/history");
       allowLeaveRef.current = true;
       setRoomState(payload.room);
       setLeaderboard(payload.leaderboard || []);
@@ -137,6 +149,7 @@ export function PlayRoomPage() {
       });
     });
     socket.on("room:closed", (payload) => {
+      invalidateCached("/profile/history");
       allowLeaveRef.current = true;
       setRoomState(payload.room);
       setQuestionPayload(null);
@@ -250,16 +263,23 @@ export function PlayRoomPage() {
       return;
     }
 
-    setAnswerState({ saving: true });
+    const revision = answerRevisionRef.current + 1;
+    answerRevisionRef.current = revision;
+    setAnswerState({ saving: true, revision });
     socketRef.current?.emit(
       "quiz:submit-answer",
       { code: roomCode, questionId: question.id, selectedOptionIds: nextSelectedIds },
       (response) => {
-        if (response?.ok) {
-          setAnswerState(response);
+        if (answerRevisionRef.current !== revision) {
           return;
         }
 
+        if (response?.ok) {
+          setAnswerState({ ...response, saving: false, revision });
+          return;
+        }
+
+        setAnswerState({ saving: false, revision });
         if (response?.message !== "Answer time is over") {
           setError(translateRealtimeError(response?.message, "Не удалось сохранить ответ"));
         }
@@ -357,8 +377,10 @@ export function PlayRoomPage() {
           <span>Возможное количество баллов: {possibleScore}</span>
         </div>
         <div className="quiz-current-place">
-          <strong>{ownLeaderboardIndex >= 0 ? ownLeaderboardIndex + 1 : "—"}</strong>
-          <span>Текущее<br />место</span>
+          <div className="quiz-current-place-rank">
+            <strong>{ownLeaderboardIndex >= 0 ? ownLeaderboardIndex + 1 : "—"}</strong>
+            <span>Текущее<br />место</span>
+          </div>
           <p>Баллов: {ownParticipant?.score || 0}</p>
         </div>
       </header>
@@ -373,29 +395,35 @@ export function PlayRoomPage() {
         </header>
 
         <div className="quiz-question-content">
-          <div className={`quiz-answer-list ${question.options.some((option) => option.imageUrl) ? "has-images" : ""}`}>
-            {question.options.map((option) => {
-              const selected = selectedIds.includes(option.id);
-              const marker = isMultiple
-                ? selected ? multipleSelectedIcon : multipleIdleIcon
-                : selected ? singleSelectedIcon : singleIdleIcon;
+          <div className="quiz-question-main">
+            {question.imageUrl ? (
+              <img className="quiz-main-image" src={resolveUploadUrl(question.imageUrl)} alt="" />
+            ) : null}
 
-              return (
-                <button
-                  className={selected ? "quiz-answer selected" : "quiz-answer"}
-                  disabled={secondsLeft <= 0}
-                  key={option.id}
-                  type="button"
-                  onClick={() => toggleOption(option.id)}
-                >
-                  <img className="quiz-answer-marker" src={marker} alt="" />
-                  <span>
-                    <strong>{option.text}</strong>
-                    {option.imageUrl ? <img src={resolveUploadUrl(option.imageUrl)} alt="" /> : null}
-                  </span>
-                </button>
-              );
-            })}
+            <div className={`quiz-answer-list ${question.options.some((option) => option.imageUrl) ? "has-images" : ""}`}>
+              {question.options.map((option) => {
+                const selected = selectedIds.includes(option.id);
+                const marker = isMultiple
+                  ? selected ? multipleSelectedIcon : multipleIdleIcon
+                  : selected ? singleSelectedIcon : singleIdleIcon;
+
+                return (
+                  <button
+                    className={selected ? "quiz-answer selected" : "quiz-answer"}
+                    disabled={secondsLeft <= 0}
+                    key={option.id}
+                    type="button"
+                    onClick={() => toggleOption(option.id)}
+                  >
+                    <img className="quiz-answer-marker" src={marker} alt="" />
+                    <span>
+                      <strong>{option.text}</strong>
+                      {option.imageUrl ? <img src={resolveUploadUrl(option.imageUrl)} alt="" /> : null}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <aside className="quiz-progress-column">
@@ -404,11 +432,19 @@ export function PlayRoomPage() {
               <div>
                 <span>{selectedIds.length ? "Ответ выбран" : "Ответ не выбран"}</span>
                 <img src={selectedIds.length ? answerSelectedIcon : answerIdleIcon} alt="" />
-                <div className="quiz-timer-track"><span style={{ width: `${progress}%` }} /></div>
+                <div
+                  aria-label={`Пройдено вопросов: ${completedQuestions} из ${totalQuestions}`}
+                  aria-valuemax={totalQuestions}
+                  aria-valuemin="0"
+                  aria-valuenow={completedQuestions}
+                  className="quiz-question-progress-track"
+                  role="progressbar"
+                >
+                  <span style={{ width: `${questionProgress}%` }} />
+                </div>
               </div>
               {answerState?.saving ? <small>Сохраняем ответ...</small> : null}
             </div>
-            {question.imageUrl ? <img className="quiz-main-image" src={resolveUploadUrl(question.imageUrl)} alt="" /> : null}
           </aside>
         </div>
       </article>

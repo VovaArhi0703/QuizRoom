@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { http } from "../api/http";
 import {
-  getParticipantAvatarStyle,
   getParticipantName,
+  getParticipantTheme,
 } from "../components/realtime/participant-utils";
+import { UserAvatar } from "../components/UserAvatar";
 import { useAuth } from "../features/auth/auth-context";
 import resultIcon from "../assets/liderboard/result_liderboard.svg";
-import userBigIcon from "../assets/liderboard/user_big_liderboard.svg";
-import userMiniIcon from "../assets/liderboard/user_mini_liderboard.svg";
 import resultShape from "../assets/liderboard/Vector_liderboard.svg";
 
 function getAccuracy(participant, totalQuestions = 0) {
@@ -60,9 +59,9 @@ export function ResultsPage({ isProfile = false }) {
 
   const leaderboard = data?.room?.participants || [];
   const storedParticipantId = location.state?.participantId || sessionStorage.getItem(`quizroom_participant_${roomCode}`);
-  const ownIndex = leaderboard.findIndex(
-    (item) => item.id === storedParticipantId || (user?.id && item.userId === user.id),
-  );
+  const ownIndex = user?.id
+    ? leaderboard.findIndex((item) => item.userId === user.id)
+    : leaderboard.findIndex((item) => item.id === storedParticipantId);
   const ownParticipant = ownIndex >= 0 ? leaderboard[ownIndex] : null;
   const isHost = data?.room?.hostId === user?.id;
   const totalQuestions = data?.room?.quiz?._count?.questions || 0;
@@ -123,12 +122,16 @@ export function ResultsPage({ isProfile = false }) {
           <div className="results-list-scroll">
             {leaderboard.map((participant, index) => {
               const accuracy = getAccuracy(participant, totalQuestions);
+              const participantTheme = getParticipantTheme(participant, index);
 
               return (
                 <article className="results-row" key={participant.id}>
-                  <span className="results-avatar" style={getParticipantAvatarStyle(participant, index)}>
-                    <img src={userMiniIcon} alt="" />
-                  </span>
+                  <UserAvatar
+                    className="results-avatar"
+                    fallbackIndex={index}
+                    name={getParticipantName(participant)}
+                    user={participant.user}
+                  />
                   <div className="results-person">
                     <strong>{getParticipantName(participant)}</strong>
                     <span>{index + 1} Место</span>
@@ -137,7 +140,15 @@ export function ResultsPage({ isProfile = false }) {
                     <p><strong>{accuracy}%</strong> Правильных ответов</p>
                     <div><span style={{ width: `${accuracy}%` }} /></div>
                   </div>
-                  <div className="results-score"><span>Баллов</span><strong>{participant.score}</strong></div>
+                  <div
+                    className="results-score"
+                    style={{
+                      "--result-score-bg": participantTheme.background,
+                      "--result-score-border": participantTheme.border,
+                    }}
+                  >
+                    <span>Баллов</span><strong>{participant.score}</strong>
+                  </div>
                 </article>
               );
             })}
@@ -154,9 +165,12 @@ export function ResultsPage({ isProfile = false }) {
             <div className="my-result-copy">
               <h2>Мой результат</h2>
               <div>
-                <span className="my-result-avatar" style={getParticipantAvatarStyle(ownParticipant || {}, ownIndex)}>
-                  <img src={userBigIcon} alt="" />
-                </span>
+                <UserAvatar
+                  className="my-result-avatar"
+                  fallbackIndex={ownIndex}
+                  name={getParticipantName(ownParticipant || {})}
+                  user={ownParticipant?.user}
+                />
                 <p><strong>{ownIndex >= 0 ? ownIndex + 1 : "—"}</strong> Место<small>Баллов: {ownParticipant?.score || 0}</small></p>
               </div>
             </div>

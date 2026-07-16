@@ -6,6 +6,7 @@ const { withDatabaseRetry } = require("../utils/databaseRetry");
 const { getCachedData, invalidateCachedData, setCachedData } = require("../utils/dataCache");
 const { HttpError } = require("../utils/httpError");
 const { deleteOwnedImages } = require("../services/storage.service");
+const { countUniqueParticipants } = require("../utils/participantResults");
 
 const quizInclude = {
   questions: {
@@ -35,7 +36,14 @@ function getRemovedImageUrls(previousQuiz, nextQuiz) {
 }
 
 async function assertQuizOwner(quizId, userId) {
-  const quiz = await prisma.quiz.findUnique({ where: { id: quizId } });
+  const quiz = await prisma.quiz.findUnique({
+    where: { id: quizId },
+    include: {
+      _count: {
+        select: { rooms: true },
+      },
+    },
+  });
 
   if (!quiz) {
     throw new HttpError(404, "Quiz was not found");
@@ -43,6 +51,13 @@ async function assertQuizOwner(quizId, userId) {
 
   if (quiz.organizerId !== userId) {
     throw new HttpError(403, "Only quiz owner can change this quiz");
+  }
+
+  if (quiz._count.rooms > 0) {
+    throw new HttpError(
+      409,
+      "Этот квиз уже запускался. Сохраните изменения через редактор, чтобы создать новую версию.",
+    );
   }
 
   return quiz;
@@ -75,11 +90,13 @@ function validateQuestionPayload(question) {
 }
 
 const listQuizzes = asyncHandler(async (req, res) => {
-  const quizzes = await getCachedData(`quizzes:${req.user.id}`, () =>
-    withDatabaseRetry(
-      () =>
-        prisma.quiz.findMany({
-          where: { organizerId: req.user.id },
+  const result = await getCachedData(`quizzes:${req.user.id}`, async () => {
+    const quizzes = await withDatabaseRetry(
+      () => prisma.quiz.findMany({
+          where: {
+            organizerId: req.user.id,
+            status: "PUBLISHED",
+          },
           orderBy: { updatedAt: "desc" },
           select: {
             id: true,
@@ -96,13 +113,69 @@ const listQuizzes = asyncHandler(async (req, res) => {
                 rooms: true,
               },
             },
+            rooms: {
+              select: {
+                code: true,
+                status: true,
+                createdAt: true,
+                finishedAt: true,
+                participants: {
+                  select: {
+                    id: true,
+                    userId: true,
+                  },
+                },
+              },
+              orderBy: { createdAt: "desc" },
+            },
           },
         }),
       { attempts: 2, baseDelayMs: 250 },
-    ),
-  );
+    );
 
-  res.json({ quizzes });
+    const enrichedQuizzes = quizzes.map((quiz) => {
+      const normalizedRooms = quiz.rooms.map(({ participants, ...room }) => ({
+        ...room,
+        _count: {
+          participants: countUniqueParticipants(participants),
+        },
+      }));
+      const participantCount = normalizedRooms.reduce(
+        (sum, room) => sum + room._count.participants,
+        0,
+      );
+      const activeRoomCount = normalizedRooms.filter(
+        (room) => room.status === "WAITING" || room.status === "ACTIVE",
+      ).length;
+      const latestFinishedRoom = normalizedRooms.find((room) => room.status === "FINISHED");
+
+      return {
+        ...quiz,
+        rooms: normalizedRooms,
+        participantCount,
+        activeRoomCount,
+        latestFinishedRoomCode: latestFinishedRoom?.code || null,
+      };
+    });
+
+    return {
+      quizzes: enrichedQuizzes,
+      stats: {
+        totalQuizzes: enrichedQuizzes.length,
+        activeRooms: enrichedQuizzes.reduce((sum, quiz) => sum + quiz.activeRoomCount, 0),
+        totalQuestions: enrichedQuizzes.reduce(
+          (sum, quiz) => sum + quiz._count.questions,
+          0,
+        ),
+        totalParticipants: enrichedQuizzes.reduce(
+          (sum, quiz) => sum + quiz.participantCount,
+          0,
+        ),
+      },
+    };
+  });
+
+  res.json(result);
 });
 
 const createQuiz = asyncHandler(async (req, res) => {
@@ -130,15 +203,22 @@ const createQuiz = asyncHandler(async (req, res) => {
 
 const saveQuizContent = asyncHandler(async (req, res) => {
   const isExistingQuiz = Boolean(req.body.id);
-  const quizId = req.body.id || randomUUID();
+  const sourceQuizId = req.body.id || null;
   const quizInput = req.body.quiz || {};
   const questions = Array.isArray(req.body.questions) ? req.body.questions : [];
   const previousQuiz = isExistingQuiz
     ? await prisma.quiz.findFirst({
-        where: { id: quizId, organizerId: req.user.id },
-        include: quizInclude,
+        where: { id: sourceQuizId, organizerId: req.user.id },
+        include: {
+          ...quizInclude,
+          rooms: {
+            select: { id: true },
+          },
+        },
       })
     : null;
+  const createsNewVersion = Boolean(previousQuiz?.rooms.length);
+  const quizId = createsNewVersion ? randomUUID() : sourceQuizId || randomUUID();
 
   if (!String(quizInput.title || "").trim()) {
     throw new HttpError(400, "Quiz title is required");
@@ -269,6 +349,17 @@ const saveQuizContent = asyncHandler(async (req, res) => {
     throw new HttpError(404, "Quiz was not found or belongs to another user");
   }
 
+  if (createsNewVersion) {
+    await withDatabaseRetry(
+      () =>
+        prisma.quiz.update({
+          where: { id: sourceQuizId },
+          data: { status: "DRAFT" },
+        }),
+      { attempts: 2, baseDelayMs: 250 },
+    );
+  }
+
   const savedQuiz = await withDatabaseRetry(
     () =>
       prisma.quiz.findUnique({
@@ -278,10 +369,20 @@ const saveQuizContent = asyncHandler(async (req, res) => {
     { attempts: 2, baseDelayMs: 250 },
   );
 
-  invalidateCachedData(`quizzes:${req.user.id}`, `history:${req.user.id}`, `quiz:${quizId}`);
+  invalidateCachedData(
+    `quizzes:${req.user.id}`,
+    `history:${req.user.id}`,
+    `quiz:${quizId}`,
+    ...(sourceQuizId && sourceQuizId !== quizId ? [`quiz:${sourceQuizId}`] : []),
+  );
   setCachedData(`quiz:${quizId}`, savedQuiz);
-  await deleteOwnedImages(getRemovedImageUrls(previousQuiz, savedQuiz), req.user.id);
-  res.status(isExistingQuiz ? 200 : 201).json({ quiz: savedQuiz });
+  if (!createsNewVersion) {
+    await deleteOwnedImages(getRemovedImageUrls(previousQuiz, savedQuiz), req.user.id);
+  }
+  res.status(isExistingQuiz && !createsNewVersion ? 200 : 201).json({
+    quiz: savedQuiz,
+    createdNewVersion: createsNewVersion,
+  });
 });
 
 const getQuiz = asyncHandler(async (req, res) => {
@@ -329,10 +430,22 @@ const deleteQuiz = asyncHandler(async (req, res) => {
     () =>
       prisma.quiz.findFirst({
         where: { id: req.params.id, organizerId: req.user.id },
-        include: quizInclude,
+        include: {
+          ...quizInclude,
+          _count: {
+            select: { rooms: true },
+          },
+        },
       }),
     { attempts: 2, baseDelayMs: 250 },
   );
+
+  if (quiz?._count.rooms > 0) {
+    throw new HttpError(
+      409,
+      "Нельзя удалить уже проведённый квиз, потому что он хранит историю результатов.",
+    );
+  }
   const result = await withDatabaseRetry(
     () =>
       prisma.quiz.deleteMany({

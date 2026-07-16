@@ -22,6 +22,7 @@ import purpleCheckIcon from "../assets/create_quiz/purple_galka_create_quiz.svg"
 import redCheckIcon from "../assets/create_quiz/red_galka_create_quiz.svg";
 import studentIcon from "../assets/create_quiz/student_create_quiz.svg";
 import { resolveUploadUrl } from "../utils/uploads";
+import { parseQuizTags, serializeQuizTags } from "../utils/quiz-tags";
 
 const tagColors = [
   { id: "green", label: "Зелёный", background: "#F1F9C6", text: "#28AB3C", checkIcon: greenCheckIcon },
@@ -82,15 +83,11 @@ function parseTimeDigits(value, fallbackSeconds) {
 }
 
 function categoryToTags(category) {
-  return String(category || "")
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean)
-    .map((label, index) => ({ id: crypto.randomUUID(), label, color: tagColors[index % tagColors.length].id }));
+  return parseQuizTags(category).map((tag) => ({ id: crypto.randomUUID(), ...tag }));
 }
 
 function tagsToCategory(tags) {
-  return tags.map((tag) => tag.label.trim()).filter(Boolean).join(", ");
+  return serializeQuizTags(tags);
 }
 
 function getQuizDraftSignature(quizForm, tags, questions, deletedQuestionIds) {
@@ -552,7 +549,7 @@ export function QuizEditorPage() {
       });
       quizWasPersisted = true;
 
-      if (!quiz?.id) {
+      if (!quiz?.id || data.quiz.id !== quiz.id) {
         navigate(`/quizzes/${data.quiz.id}/edit`, { replace: true });
       }
 
