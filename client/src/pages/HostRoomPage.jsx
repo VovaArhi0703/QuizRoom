@@ -19,6 +19,7 @@ export function HostRoomPage() {
   const [participants, setParticipants] = useState([]);
   const [error, setError] = useState("");
   const [isCopied, setIsCopied] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
 
   const codeDigits = useMemo(() => String(roomState?.code || roomCode || "").padStart(6, "0").slice(0, 6), [
     roomCode,
@@ -28,7 +29,7 @@ export function HostRoomPage() {
   const hasFullParticipantsList = participants.length >= 6;
   const isWaiting = !roomState || roomState.status === "WAITING";
   const canStart = isWaiting && hasParticipants;
-  const shouldWarnOnLeave = !roomState || roomState.status === "WAITING";
+  const shouldWarnOnLeave = !roomState || roomState.status !== "FINISHED";
 
   const closeRoomBeforeLeave = useCallback(
     () =>
@@ -195,9 +196,12 @@ export function HostRoomPage() {
     };
   }, [closeRoomBeforeLeave, shouldWarnOnLeave]);
 
-  function emitWithAck(eventName) {
+  function startQuiz() {
     setError("");
-    socketRef.current?.emit(eventName, { code: roomCode }, (response) => {
+    setIsStarting(true);
+    socketRef.current?.emit("room:start", { code: roomCode }, (response) => {
+      setIsStarting(false);
+
       if (!response?.ok) {
         setError(translateRealtimeError(response?.message));
       }
@@ -270,8 +274,8 @@ export function HostRoomPage() {
         </section>
 
         <section className="gathering-start-section">
-          <button className="gathering-start-button" type="button" disabled={!canStart} onClick={() => emitWithAck("room:start")}>
-            Начать квиз
+          <button className="gathering-start-button" type="button" disabled={!canStart || isStarting} onClick={startQuiz}>
+            {isStarting ? "Подготавливаем квиз..." : "Начать квиз"}
           </button>
 
           <div className="gathering-participants-heading">

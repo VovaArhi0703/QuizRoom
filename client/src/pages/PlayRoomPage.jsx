@@ -5,6 +5,7 @@ import { ParticipantList } from "../components/realtime/ParticipantList";
 import { getParticipantsLabel, translateRealtimeError } from "../components/realtime/participant-utils";
 import { useAuth } from "../features/auth/auth-context";
 import { createSocket } from "../sockets/socket";
+import { preloadImageUrls } from "../utils/preload-images";
 import { resolveUploadUrl } from "../utils/uploads";
 import hourglassIcon from "../assets/connection/connection_hourglass.svg";
 import singleSelectedIcon from "../assets/quiz/answer_off_quiz.svg";
@@ -40,6 +41,7 @@ export function PlayRoomPage() {
   const answerRevisionRef = useRef(0);
   const allowLeaveRef = useRef(false);
   const historyGuardRef = useRef(false);
+  const assetPreparationRef = useRef(0);
   const [roomState, setRoomState] = useState(null);
   const [quizTitle, setQuizTitle] = useState("Квиз");
   const [participant, setParticipant] = useState(null);
@@ -50,8 +52,10 @@ export function PlayRoomPage() {
   const [answerState, setAnswerState] = useState(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [error, setError] = useState("");
+  const [isPreparingAssets, setIsPreparingAssets] = useState(false);
 
   const question = questionPayload?.question;
+  const questionImageUrl = resolveUploadUrl(question?.imageUrl);
   const isMultiple = question?.type === "MULTIPLE";
   const shouldWarnOnLeave = Boolean(participant) && roomState?.status !== "FINISHED";
   const ownLeaderboardIndex = user?.id
@@ -86,6 +90,31 @@ export function PlayRoomPage() {
     const socket = createSocket();
     socketRef.current = socket;
 
+    async function prepareRoomAssets(assetUrls) {
+      const preparationId = assetPreparationRef.current + 1;
+      assetPreparationRef.current = preparationId;
+      const urls = (assetUrls || []).map(resolveUploadUrl).filter(Boolean);
+
+      setIsPreparingAssets(urls.length > 0);
+      await preloadImageUrls(urls);
+
+      if (assetPreparationRef.current !== preparationId || !socket.connected) {
+        return;
+      }
+
+      socket.emit("room:assets-ready", { code: roomCode }, (response) => {
+        if (assetPreparationRef.current !== preparationId) {
+          return;
+        }
+
+        setIsPreparingAssets(false);
+
+        if (!response?.ok && response?.message !== "Room is no longer waiting for participants") {
+          setError(translateRealtimeError(response?.message));
+        }
+      });
+    }
+
     function joinAsParticipant() {
       socket.emit(
         "room:join",
@@ -104,6 +133,12 @@ export function PlayRoomPage() {
           setRoomState(response.room);
           setQuizTitle(response.room?.quiz?.title || "Квиз");
           sessionStorage.setItem(`quizroom_participant_${roomCode}`, response.participant.id);
+
+          if (response.room?.status === "WAITING") {
+            prepareRoomAssets(response.assetUrls);
+          } else {
+            setIsPreparingAssets(false);
+          }
         },
       );
     }
@@ -159,6 +194,7 @@ export function PlayRoomPage() {
     socket.connect();
 
     return () => {
+      assetPreparationRef.current += 1;
       socket.off("connect", joinAsParticipant);
       socket.disconnect();
     };
@@ -338,7 +374,11 @@ export function PlayRoomPage() {
             <img src={hourglassIcon} alt="" />
             <div>
               <h1>Ожидание начала квиза</h1>
-              <p>Организатор ещё не запустил квиз. Пожалуйста, подождите</p>
+              <p>
+                {isPreparingAssets
+                  ? "Подготавливаем изображения квиза. Начало станет доступно после загрузки."
+                  : "Организатор ещё не запустил квиз. Пожалуйста, подождите"}
+              </p>
             </div>
           </header>
           <section className="participant-waiting-list">
@@ -396,8 +436,14 @@ export function PlayRoomPage() {
 
         <div className="quiz-question-content">
           <div className="quiz-question-main">
-            {question.imageUrl ? (
-              <img className="quiz-main-image" src={resolveUploadUrl(question.imageUrl)} alt="" />
+            {questionImageUrl ? (
+              <img
+                className="quiz-main-image quiz-main-image-mobile"
+                src={questionImageUrl}
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
             ) : null}
 
             <div className={`quiz-answer-list ${question.options.some((option) => option.imageUrl) ? "has-images" : ""}`}>
@@ -418,7 +464,9 @@ export function PlayRoomPage() {
                     <img className="quiz-answer-marker" src={marker} alt="" />
                     <span>
                       <strong>{option.text}</strong>
-                      {option.imageUrl ? <img src={resolveUploadUrl(option.imageUrl)} alt="" /> : null}
+                      {option.imageUrl ? (
+                        <img src={resolveUploadUrl(option.imageUrl)} alt="" decoding="async" />
+                      ) : null}
                     </span>
                   </button>
                 );
@@ -445,6 +493,15 @@ export function PlayRoomPage() {
               </div>
               {answerState?.saving ? <small>Сохраняем ответ...</small> : null}
             </div>
+            {questionImageUrl ? (
+              <img
+                className="quiz-main-image quiz-main-image-desktop"
+                src={questionImageUrl}
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
+            ) : null}
           </aside>
         </div>
       </article>

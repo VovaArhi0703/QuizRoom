@@ -684,10 +684,12 @@ export function QuizEditorPage() {
                       key={tag.id}
                       style={{ "--tag-bg": color.background, "--tag-color": color.text }}
                     >
+                      <span className="cq-tag-chip-measure" aria-hidden="true">
+                        {tag.label || "\u00a0"}
+                      </span>
                       <input
                         className="cq-tag-chip-input"
                         value={tag.label}
-                        style={{ width: `${Math.max(38, Math.min(240, (tag.label.length || 3) * 14))}px` }}
                         autoFocus
                         onChange={(event) => updateEditingTagLabel(tag.id, event.target.value)}
                         onKeyDown={(event) => {
@@ -835,13 +837,9 @@ function AutoResizeTextarea({ className, value, onChange, placeholder, minHeight
       return;
     }
 
-    textarea.style.height = `${minHeight}px`;
-
-    if (textarea.scrollHeight > minHeight + 1) {
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    } else {
-      textarea.style.height = "";
-    }
+    textarea.style.height = "auto";
+    const responsiveMinHeight = Number.parseFloat(window.getComputedStyle(textarea).minHeight) || minHeight;
+    textarea.style.height = `${Math.max(responsiveMinHeight, textarea.scrollHeight)}px`;
   }, [minHeight, value]);
 
   return (

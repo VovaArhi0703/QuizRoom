@@ -749,6 +749,14 @@
   object-fit: cover;
 }
 
+.quiz-main-image-mobile {
+  display: none;
+}
+
+.quiz-main-image-desktop {
+  display: block;
+}
+
 .results-loading {
   display: grid;
   min-height: 420px;
@@ -1117,6 +1125,14 @@
   line-height: 29px;
 }
 
+@media (min-width: 1181px) {
+  .results-title-card,
+  .my-result-card {
+    height: 182px;
+    min-height: 182px;
+  }
+}
+
 @media (max-width: 1180px) {
   .quiz-question-content,
   .results-screen {
@@ -1135,6 +1151,14 @@
 
   .quiz-main-image {
     max-height: 520px;
+  }
+
+  .quiz-main-image-mobile {
+    display: block;
+  }
+
+  .quiz-main-image-desktop {
+    display: none;
   }
 }
 
@@ -2645,7 +2669,7 @@ h2 {
 .cq-title-input {
   min-height: 83px;
   border: 1px solid rgba(0, 0, 0, 0.16);
-  padding: 20px;
+  padding: 19px 20px;
   font-size: 36px;
   line-height: 43px;
 }
@@ -2653,7 +2677,7 @@ h2 {
 .cq-question-input {
   min-height: 69px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 19px 20px;
   font-size: 24px;
   line-height: 29px;
 }
@@ -2737,12 +2761,32 @@ h2 {
 }
 
 .cq-tag-chip-editing {
+  position: relative;
   justify-content: flex-start;
   min-width: 0;
+  max-width: 264px;
+  overflow: hidden;
   width: fit-content;
 }
 
+.cq-tag-chip-measure {
+  display: block;
+  min-width: 38px;
+  max-width: 240px;
+  overflow: hidden;
+  visibility: hidden;
+  font: inherit;
+  line-height: inherit;
+  pointer-events: none;
+  white-space: pre;
+}
+
 .cq-tag-chip-input {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  left: 12px;
+  width: calc(100% - 24px);
   min-width: 0;
   max-width: 240px;
   border: 0;
@@ -2754,6 +2798,7 @@ h2 {
   line-height: 29px;
   outline: 0;
   padding: 0;
+  transform: translateY(-50%);
 }
 
 .cq-icon-button {
@@ -2769,8 +2814,11 @@ h2 {
 }
 
 .cq-icon-button img {
+  display: block;
   width: 28px;
   height: 28px;
+  margin: auto;
+  object-fit: contain;
 }
 
 .cq-tag-add-button img {
@@ -2791,8 +2839,11 @@ h2 {
 }
 
 .cq-color-swatch img {
+  display: block;
   width: 38px;
   height: 38px;
+  margin: auto;
+  object-fit: contain;
 }
 
 .cq-tag-delete-button {
@@ -2943,8 +2994,11 @@ h2 {
 }
 
 .cq-reorder-buttons img {
+  display: block;
   width: 28px;
   height: 28px;
+  margin: auto;
+  object-fit: contain;
 }
 
 .cq-question-settings {
@@ -3152,12 +3206,12 @@ h2 {
 
 .cq-answer-field {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   width: min(1260px, calc(100% - 148px));
   min-height: 53px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
-  padding: 12px;
+  padding: 11px 12px;
   gap: 14px;
 }
 
@@ -5777,14 +5831,14 @@ textarea:focus {
 
   .cq-title-input {
     min-height: 62px;
-    padding: 14px;
+    padding: 15px 14px;
     font-size: 24px;
     line-height: 29px;
   }
 
   .cq-question-input {
     min-height: 58px;
-    padding: 14px;
+    padding: 17px 14px;
     font-size: 18px;
     line-height: 22px;
   }
@@ -5813,6 +5867,21 @@ textarea:focus {
     max-width: min(160px, 48vw);
     font-size: 17px;
     line-height: 21px;
+  }
+
+  .cq-tag-chip-editing {
+    max-width: calc(min(160px, 48vw) + 20px);
+  }
+
+  .cq-tag-chip-measure {
+    min-width: 24px;
+    max-width: min(160px, 48vw);
+  }
+
+  .cq-tag-chip-input {
+    right: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
   }
 
   .cq-color-tools {
@@ -6001,11 +6070,10 @@ textarea:focus {
     display: grid;
     width: 100%;
     min-height: 0;
-    grid-template-columns: 76px 44px 44px minmax(0, 1fr);
+    grid-template-columns: 76px 44px 44px minmax(0, 1fr) max-content;
     grid-template-areas:
-      "field field field field"
-      "order delete image ."
-      "points points points points";
+      "field field field field field"
+      "order delete image . points";
     align-items: center;
     gap: 8px;
   }
@@ -6015,7 +6083,7 @@ textarea:focus {
     width: 100%;
     min-height: 52px;
     grid-area: field;
-    padding: 11px;
+    padding: 13px 11px;
     gap: 10px;
   }
 
@@ -6074,7 +6142,21 @@ textarea:focus {
   }
 
   .cq-add-question-inline {
-    margin-left: auto;
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-left: 0;
+  }
+
+  .cq-question-actions {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    justify-content: start;
+  }
+
+  .cq-question-actions .cq-action-button {
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 15px;
   }
 }
 

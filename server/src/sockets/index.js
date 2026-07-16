@@ -10,8 +10,10 @@ const {
 } = require("../utils/participantResults");
 
 const socketParticipants = new Map();
+const socketParticipantRooms = new Map();
 const socketHostRooms = new Map();
 const roomTimers = new Map();
+const roomAssetReadiness = new Map();
 const answerQueues = new Map();
 const participantJoinQueues = new Map();
 const advancingRooms = new Set();
@@ -40,6 +42,74 @@ function publicQuestion(question) {
       imageUrl: option.imageUrl,
     })),
   };
+}
+
+function getQuizAssetUrls(quiz) {
+  return [...new Set(
+    (quiz?.questions || []).flatMap((question) => [
+      question.imageUrl,
+      ...(question.options || []).map((option) => option.imageUrl),
+    ]).filter(Boolean),
+  )];
+}
+
+function setParticipantAssetReadiness(roomId, participantId, ready) {
+  const readiness = roomAssetReadiness.get(roomId) || new Map();
+  readiness.set(participantId, Boolean(ready));
+  roomAssetReadiness.set(roomId, readiness);
+}
+
+function removeParticipantAssetReadiness(roomId, participantId) {
+  if (!roomId || !participantId) {
+    return;
+  }
+
+  const stillConnected = [...socketParticipants.entries()].some(
+    ([socketId, connectedParticipantId]) =>
+      connectedParticipantId === participantId && socketParticipantRooms.get(socketId) === roomId,
+  );
+
+  if (stillConnected) {
+    return;
+  }
+
+  const readiness = roomAssetReadiness.get(roomId);
+  readiness?.delete(participantId);
+
+  if (readiness?.size === 0) {
+    roomAssetReadiness.delete(roomId);
+  }
+}
+
+function getConnectedParticipantIds(roomId) {
+  return [...new Set(
+    [...socketParticipantRooms.entries()]
+      .filter(([, connectedRoomId]) => connectedRoomId === roomId)
+      .map(([socketId]) => socketParticipants.get(socketId))
+      .filter(Boolean),
+  )];
+}
+
+async function waitForRoomAssets(roomId, timeoutMs = 60_000) {
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    const participantIds = getConnectedParticipantIds(roomId);
+
+    if (participantIds.length === 0) {
+      throw new Error("No connected participants in room");
+    }
+
+    const readiness = roomAssetReadiness.get(roomId);
+
+    if (participantIds.every((participantId) => readiness?.get(participantId) === true)) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  throw new Error("Participants are still loading quiz images");
 }
 
 async function getLeaderboard(roomId) {
@@ -278,6 +348,7 @@ async function waitForQuestionAnswers(questionId) {
 
 async function finishRoom(io, room) {
   clearRoomTimer(room.id);
+  roomAssetReadiness.delete(room.id);
 
   const finishedRoom =
     room.status === "FINISHED"
@@ -474,6 +545,9 @@ async function closeRoomByHost(io, code, hostId) {
     throw new Error("Only room host can close this room");
   }
 
+  clearRoomTimer(room.id);
+  roomAssetReadiness.delete(room.id);
+
   const finishedRoom =
     room.status === "FINISHED"
       ? room
@@ -519,7 +593,7 @@ function scheduleHostDisconnect(io, code, hostId) {
     try {
       const room = await queryDatabase(() => prisma.room.findUnique({ where: { code } }));
 
-      if (room?.status === "WAITING") {
+      if (room && room.status !== "FINISHED") {
         await closeRoomByHost(io, code, hostId);
       }
     } catch (_error) {
@@ -661,7 +735,14 @@ function registerSockets(io) {
         });
 
         socketParticipants.set(socket.id, participant.id);
+        socketParticipantRooms.set(socket.id, room.id);
         socket.join(room.code);
+
+        const assetUrls = getQuizAssetUrls(room.quiz);
+
+        if (room.status === "WAITING") {
+          setParticipantAssetReadiness(room.id, participant.id, assetUrls.length === 0);
+        }
 
         const participants = await getParticipants(room.id);
         const leaderboard = createLeaderboard(participants);
@@ -684,7 +765,33 @@ function registerSockets(io) {
             currentQuestionStartedAt: room.currentQuestionStartedAt,
             quiz: { id: room.quiz.id, title: room.quiz.title },
           },
+          assetUrls,
         });
+      } catch (error) {
+        callback?.({ ok: false, message: error.message });
+      }
+    });
+
+    socket.on("room:assets-ready", async ({ code } = {}, callback) => {
+      try {
+        const participantId = socketParticipants.get(socket.id);
+        const roomId = socketParticipantRooms.get(socket.id);
+
+        if (!participantId || !roomId) {
+          throw new Error("Participant is not connected to room");
+        }
+
+        const room = await queryDatabase(() => prisma.room.findUnique({
+          where: { id: roomId },
+          select: { code: true, status: true },
+        }));
+
+        if (!room || room.code !== String(code || "").toUpperCase() || room.status !== "WAITING") {
+          throw new Error("Room is no longer waiting for participants");
+        }
+
+        setParticipantAssetReadiness(roomId, participantId, true);
+        callback?.({ ok: true });
       } catch (error) {
         callback?.({ ok: false, message: error.message });
       }
@@ -730,6 +837,8 @@ function registerSockets(io) {
           throw new Error("At least one participant is required");
         }
 
+        await waitForRoomAssets(room.id);
+
         const updatedRoom = await queryDatabase(() => prisma.room.update({
           where: { id: room.id },
           data: {
@@ -761,7 +870,7 @@ function registerSockets(io) {
 
         socketHostRooms.delete(socket.id);
 
-        if (room?.status === "WAITING") {
+        if (room && room.status !== "FINISHED") {
           await closeRoomByHost(io, code, socket.user.id);
         } else if (room) {
           socket.leave(room.code);
@@ -929,7 +1038,10 @@ function registerSockets(io) {
     socket.on("room:leave", async ({ code } = {}, callback) => {
       try {
         const participantId = socketParticipants.get(socket.id);
+        const roomId = socketParticipantRooms.get(socket.id);
         socketParticipants.delete(socket.id);
+        socketParticipantRooms.delete(socket.id);
+        removeParticipantAssetReadiness(roomId, participantId);
         await removeWaitingParticipant(io, participantId);
         socket.leave(String(code || "").toUpperCase());
         callback?.({ ok: true });
@@ -940,9 +1052,12 @@ function registerSockets(io) {
 
     socket.on("disconnect", async () => {
       const participantId = socketParticipants.get(socket.id);
+      const participantRoomId = socketParticipantRooms.get(socket.id);
       const hostRoomCode = socketHostRooms.get(socket.id);
       socketParticipants.delete(socket.id);
+      socketParticipantRooms.delete(socket.id);
       socketHostRooms.delete(socket.id);
+      removeParticipantAssetReadiness(participantRoomId, participantId);
 
       try {
         if (participantId) {

@@ -51,6 +51,8 @@ export function translateRealtimeError(message, fallback = "Не удалось 
     "Only room host can open this room": "Открыть эту комнату может только организатор",
     "Only room host can start quiz": "Запустить квиз может только организатор",
     "Only room host can close this room": "Закрыть комнату может только организатор",
+    "No connected participants in room": "В комнате нет подключённых участников",
+    "Participants are still loading quiz images": "Участники ещё загружают изображения. Попробуйте запустить квиз через несколько секунд",
   };
 
   return translations[message] || message || fallback;

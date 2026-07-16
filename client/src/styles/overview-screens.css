@@ -720,12 +720,14 @@
 }
 
 .dashboard-average {
+  --dashboard-average-size: clamp(208px, 27cqw, 252px);
   position: relative;
   display: grid;
-  width: clamp(208px, 27cqw, 252px);
-  height: auto;
-  aspect-ratio: 1;
-  flex: 0 1 252px;
+  width: var(--dashboard-average-size);
+  min-width: var(--dashboard-average-size);
+  height: var(--dashboard-average-size);
+  min-height: var(--dashboard-average-size);
+  flex: 0 0 var(--dashboard-average-size);
   place-items: center;
   border-radius: 50%;
   background: conic-gradient(#daf276 0 var(--progress), #f1f9c6 var(--progress) 360deg);
@@ -734,8 +736,7 @@
 .dashboard-average::before {
   position: absolute;
   width: 82.54%;
-  height: auto;
-  aspect-ratio: 1;
+  height: 82.54%;
   border-radius: 50%;
   background: #fff;
   content: "";
@@ -965,8 +966,8 @@
 
 @media (max-width: 1540px) {
   .dashboard-profile-main { width: auto; }
-  .dashboard-average { width: clamp(208px, 25cqw, 220px); height: auto; flex-basis: 220px; }
-  .dashboard-average::before { width: 82%; height: auto; }
+  .dashboard-average { --dashboard-average-size: clamp(208px, 25cqw, 220px); }
+  .dashboard-average::before { width: 82%; height: 82%; }
   .dashboard-mini-stats { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .dashboard-mini-stat { padding: 16px; gap: 10px; }
   .dashboard-activity-row { grid-template-columns: minmax(250px, 1fr) 100px 220px 88px; gap: 20px; }
