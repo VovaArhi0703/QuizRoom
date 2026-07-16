@@ -10,3 +10,6 @@ server/uploads/*
 /*-desktop.png
 /*-mobile.png
 .DS_Store
+
+.vercel
+.env*
